@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pysonet"
+version = "0.1.0"
+description = "Social media by Django"
+authors = ["Mikhail <mixail.critsyn@mail.ru>"]
+
+[tool.poetry.dependencies]
+python = "3.8.3"
+Django = "3.2.9"
+djangorestframework = "3.12.4"
+Pillow = "8.4.0"
+psycopg2 = "2.9.2"
+djoser = "2.0.3"
+djangorestframework-simplejwt = "^5.0.0"
+drf-yasg = "^1.20.0"
+django-cors-headers = "^3.10.0"
+django-mptt = "^0.13.4"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
