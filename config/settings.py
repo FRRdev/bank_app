@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'djoser',
+    'django_filters',
     'mptt',
     'drf_yasg',
 
@@ -46,7 +47,8 @@ INSTALLED_APPS = [
     'src.followers',
     'src.profiles',
     'src.wall',
-    'src.comments'
+    'src.comments',
+    'src.bank_core',
 ]
 
 MIDDLEWARE = [
