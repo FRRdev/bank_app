@@ -30,6 +30,12 @@ class PostView(CreateRetrieveUpdateDestroy):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    def retrieve(self, request, *args, **kwargs):
+        post = Post.objects.get(pk=self.kwargs['pk'])
+        post.view_count += 1
+        post.save()
+        return super().retrieve(request, *args, **kwargs)
+
 
 class CommentsView(CreateUpdateDestroy):
     """ CRUD комментариев к запси

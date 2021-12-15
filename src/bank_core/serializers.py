@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from src.profiles.models import UserNet
 from rest_framework import serializers
 
 from .models import Currency, Category, Transaction
@@ -7,7 +7,7 @@ from .reports import ReportParams
 
 class ReadUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = UserNet
         fields = ("id", "username", "first_name", "last_name")
         read_only_fields = fields
 

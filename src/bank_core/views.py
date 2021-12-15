@@ -58,4 +58,3 @@ class TransactionReportAPIView(APIView):
         data = transaction_report(params)
         serializer = ReportEntrySerializer(instance=data, many=True)
         return Response(data=serializer.data)
-
