@@ -1,7 +1,7 @@
 from src.profiles.models import UserNet
 from rest_framework import serializers
 
-from .models import Currency, Category, Transaction
+from .models import Currency, Category, Transaction, Bank
 from .reports import ReportParams
 
 
@@ -64,3 +64,12 @@ class ReportParamsSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return ReportParams(**validated_data)
+
+
+class BankSerializer(serializers.ModelSerializer):
+    """ Класс сериализации для Банка
+    """
+
+    class Meta:
+        model = Bank
+        fields = '__all__'

@@ -39,3 +39,4 @@ class TechnologyView(CreateRetrieveUpdateDestroy):
     permission_classes_by_action = {'get': [permissions.AllowAny],
                                     'update': [permissions.IsAuthenticated],
                                     'destroy': [permissions.IsAuthenticated]}
+

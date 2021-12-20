@@ -22,7 +22,7 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-    path('bank/', include('src.bank_core.urls')),
+    path('bank_core/', include('src.bank_core.urls')),
     path('wall/', include('src.wall.urls')),
     path('feed/', include('src.feed.urls')),
     path('follower/', include('src.followers.urls')),

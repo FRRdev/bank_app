@@ -1,19 +1,33 @@
 from django.db import models
 from django.conf import settings
 
+
+class Bank(models.Model):
+    name = models.CharField(max_length=120, unique=True)
+    address = models.CharField(max_length=120, unique=True)
+    year_of_foundation = models.PositiveIntegerField()
+    director = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Currency(models.Model):
+    bank = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='currencies',null=True,blank=True)
     code = models.CharField(max_length=3, unique=True)
     name = models.CharField(max_length=32, blank=True)
 
     def __str__(self):
         return self.name
 
+
 class Category(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="categories")
     name = models.CharField(max_length=32, blank=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.user}'
+
 
 class Transaction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="transactions")
