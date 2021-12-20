@@ -16,10 +16,12 @@ class GetUserNetReadableSerializer(serializers.ModelSerializer):
     """ Вывод инфо о user (с именами технологий) """
     technology = serializers.SerializerMethodField('get_technologys')
     avatar = serializers.ImageField(read_only=True)
+    bank = serializers.SlugRelatedField(slug_field="name",read_only=True)
 
     class Meta:
         model = UserNet
         exclude = ("password", "last_login", "is_active", "is_staff", "is_superuser", "groups", "user_permissions")
+
 
     def get_technologys(self, obj):
         tech_name_list = [tech.name for tech in obj.technology.all()]

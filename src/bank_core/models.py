@@ -14,7 +14,7 @@ class Bank(models.Model):
 
 class Currency(models.Model):
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='currencies',null=True,blank=True)
-    code = models.CharField(max_length=3, unique=True)
+    code = models.CharField(max_length=3)
     name = models.CharField(max_length=32, blank=True)
 
     def __str__(self):

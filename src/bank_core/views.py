@@ -9,11 +9,11 @@ from rest_framework.viewsets import ModelViewSet
 
 from .models import Currency, Category, Transaction, Bank
 from .serializers import CurrencySerializer, CategorySerializer, WriteTransactionSerializer, \
-    ReadTransactionSerializer, ReportEntrySerializer, ReportParamsSerializer ,BankSerializer
+    ReadTransactionSerializer, ReportEntrySerializer, ReportParamsSerializer, BankSerializer
 
 from .reports import transaction_report
 from .permissions import IsAdminOrReadOnly, AllowListPermission
-from src.base.classes import CreateRetrieveUpdateDestroy
+from src.base.classes import MixedPermission, CreateRetrieveUpdateDestroy
 
 
 class CurrencyModelViewSet(ModelViewSet):
@@ -62,18 +62,12 @@ class TransactionReportAPIView(APIView):
         return Response(data=serializer.data)
 
 
-class BankView(ModelViewSet):
+class BankView(MixedPermission, ModelViewSet):
     queryset = Bank.objects.all()
     serializer_class = BankSerializer
-    permission_classes_by_action = {'get': [IsAuthenticated],
+    permission_classes_by_action = {'list': [IsAuthenticated],
                                     'create': [IsAdminUser],
                                     'update': [IsAuthenticated],
                                     'destroy': [IsAuthenticated]}
 
-class ListBankView(ListAPIView):
-    """Вывод списка банков
-    """
-    permission_classes = [IsAuthenticated]
-    serializer_class = BankSerializer
-    queryset = Bank.objects.all()
 

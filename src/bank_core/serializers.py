@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from .models import Currency, Category, Transaction, Bank
 from .reports import ReportParams
+from src.profiles.serializers import GetUserPublicSerializer
 
 
 class ReadUserSerializer(serializers.ModelSerializer):
@@ -15,7 +16,7 @@ class ReadUserSerializer(serializers.ModelSerializer):
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
-        fields = ("id", "code", "name")
+        fields = ("id", "code", "name", "bank")
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -69,6 +70,7 @@ class ReportParamsSerializer(serializers.Serializer):
 class BankSerializer(serializers.ModelSerializer):
     """ Класс сериализации для Банка
     """
+    currencies = CurrencySerializer(many=True, read_only=True)
 
     class Meta:
         model = Bank
