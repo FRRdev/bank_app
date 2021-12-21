@@ -16,16 +16,16 @@ class GetUserNetReadableSerializer(serializers.ModelSerializer):
     """ Вывод инфо о user (с именами технологий) """
     technology = serializers.SerializerMethodField('get_technologys')
     avatar = serializers.ImageField(read_only=True)
-    bank = serializers.SlugRelatedField(slug_field="name",read_only=True)
+    bank = serializers.SlugRelatedField(slug_field="name", read_only=True)
 
     class Meta:
         model = UserNet
         exclude = ("password", "last_login", "is_active", "is_staff", "is_superuser", "groups", "user_permissions")
 
-
     def get_technologys(self, obj):
         tech_name_list = [tech.name for tech in obj.technology.all()]
         return tech_name_list
+
 
 class GetUserPublicSerializer(serializers.ModelSerializer):
     """ Вывод публичной инфо о user """
@@ -45,6 +45,14 @@ class GetUserPublicSerializer(serializers.ModelSerializer):
         )
 
 
+class GetUserBankSerializer(serializers.ModelSerializer):
+    """ Вывод публичной инфо о user для банка"""
+
+    class Meta:
+        model = UserNet
+        fields = ('username', 'first_name', 'last_name')
+
+
 class UserByFollowerSerializer(serializers.ModelSerializer):
     """Сериализация для подписчиков
     """
@@ -62,4 +70,3 @@ class TechnologySerializer(serializers.ModelSerializer):
     class Meta:
         model = Technology
         fields = ('name',)
-

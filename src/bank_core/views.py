@@ -1,4 +1,6 @@
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -9,8 +11,9 @@ from rest_framework.viewsets import ModelViewSet
 
 from .models import Currency, Category, Transaction, Bank
 from .serializers import CurrencySerializer, CategorySerializer, WriteTransactionSerializer, \
-    ReadTransactionSerializer, ReportEntrySerializer, ReportParamsSerializer, BankSerializer
+    ReadTransactionSerializer, ReportEntrySerializer, ReportParamsSerializer, BankWriteSerializer, BankReadSerializer
 
+from src.profiles.models import UserNet
 from .reports import transaction_report
 from .permissions import IsAdminOrReadOnly, AllowListPermission
 from src.base.classes import MixedPermission, CreateRetrieveUpdateDestroy
@@ -24,7 +27,7 @@ class CurrencyModelViewSet(ModelViewSet):
 
 
 class CategoryModelViewSet(ModelViewSet):
-    permission_classes = (DjangoModelPermissions, AllowListPermission)
+    permission_classes = (AllowListPermission,)
     serializer_class = CategorySerializer
 
     def get_queryset(self):
@@ -39,6 +42,19 @@ class TransactionModelViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Transaction.objects.select_related("currency", "category", "user").filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        possibility_to_save = Bank.objects.prefetch_related("bank_users", "currencies").filter(
+            bank_users=request.user.pk, currencies=serializer.validated_data['currency'])
+        if possibility_to_save:
+            print('Транзакция возможна')
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return HttpResponse('Incorrect transactions.Please input correct currency.')
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
@@ -64,10 +80,17 @@ class TransactionReportAPIView(APIView):
 
 class BankView(MixedPermission, ModelViewSet):
     queryset = Bank.objects.all()
-    serializer_class = BankSerializer
+    serializer_class = BankWriteSerializer
     permission_classes_by_action = {'list': [IsAuthenticated],
                                     'create': [IsAdminUser],
                                     'update': [IsAuthenticated],
                                     'destroy': [IsAuthenticated]}
 
+    def get_queryset(self):
+        return Bank.objects.prefetch_related("currencies", "bank_users").all()
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return BankReadSerializer
+        return BankWriteSerializer
 

@@ -1,9 +1,10 @@
 from src.profiles.models import UserNet
 from rest_framework import serializers
+from django.db.models import Sum
 
 from .models import Currency, Category, Transaction, Bank
 from .reports import ReportParams
-from src.profiles.serializers import GetUserPublicSerializer
+from src.profiles.serializers import GetUserBankSerializer
 
 
 class ReadUserSerializer(serializers.ModelSerializer):
@@ -28,7 +29,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class WriteTransactionSerializer(serializers.ModelSerializer):
-    currency = serializers.SlugRelatedField(slug_field="code", queryset=Currency.objects.all())
+    # currency = serializers.SlugRelatedField(slug_field="code", queryset=Currency.objects.all())
 
     class Meta:
         model = Transaction
@@ -67,11 +68,29 @@ class ReportParamsSerializer(serializers.Serializer):
         return ReportParams(**validated_data)
 
 
-class BankSerializer(serializers.ModelSerializer):
+class BankWriteSerializer(serializers.ModelSerializer):
     """ Класс сериализации для Банка
     """
+    bank_users = GetUserBankSerializer(many=True, read_only=True)
     currencies = CurrencySerializer(many=True, read_only=True)
 
     class Meta:
         model = Bank
         fields = '__all__'
+
+
+class BankReadSerializer(serializers.ModelSerializer):
+    """ Класс сериализации для Банка
+    """
+    total_sum_of_transaction = serializers.SerializerMethodField('get_total_sum_of_transaction')
+    bank_users = GetUserBankSerializer(many=True, read_only=True)
+    currencies = CurrencySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Bank
+        fields = '__all__'
+
+    def get_total_sum_of_transaction(self, obj):
+        query_result = Transaction.objects.select_related("user").filter(user__bank=obj.pk).aggregate(
+            total_sum=Sum('amount'))
+        return query_result['total_sum']
