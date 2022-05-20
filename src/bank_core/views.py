@@ -2,9 +2,7 @@ from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListAPIView
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -13,13 +11,14 @@ from .models import Currency, Category, Transaction, Bank
 from .serializers import CurrencySerializer, CategorySerializer, WriteTransactionSerializer, \
     ReadTransactionSerializer, ReportEntrySerializer, ReportParamsSerializer, BankWriteSerializer, BankReadSerializer
 
-from src.profiles.models import UserNet
 from .reports import transaction_report
-from .permissions import IsAdminOrReadOnly, AllowListPermission
-from src.base.classes import MixedPermission, CreateRetrieveUpdateDestroy
+from src.base.permissions import IsAdminOrReadOnly, AllowListPermission
+from src.base.classes import MixedPermission
 
 
 class CurrencyModelViewSet(ModelViewSet):
+    """ Currency CRUD view
+    """
     permission_classes = (IsAdminOrReadOnly,)
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
@@ -27,6 +26,8 @@ class CurrencyModelViewSet(ModelViewSet):
 
 
 class CategoryModelViewSet(ModelViewSet):
+    """ Category CRUD view
+    """
     permission_classes = (AllowListPermission,)
     serializer_class = CategorySerializer
 
@@ -35,6 +36,8 @@ class CategoryModelViewSet(ModelViewSet):
 
 
 class TransactionModelViewSet(ModelViewSet):
+    """ Transaction CRUD view
+    """
     filter_backends = (SearchFilter, OrderingFilter, DjangoFilterBackend)
     search_fields = ("description",)
     ordering_fields = ("amount", "date")
@@ -66,6 +69,8 @@ class TransactionModelViewSet(ModelViewSet):
 
 
 class TransactionReportAPIView(APIView):
+    """ Get report about transactions for user view
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -79,6 +84,8 @@ class TransactionReportAPIView(APIView):
 
 
 class BankView(MixedPermission, ModelViewSet):
+    """ Bank CRUD view
+    """
     queryset = Bank.objects.all()
     serializer_class = BankWriteSerializer
     permission_classes_by_action = {'list': [IsAuthenticated],
@@ -93,4 +100,3 @@ class BankView(MixedPermission, ModelViewSet):
         if self.action in ("list", "retrieve"):
             return BankReadSerializer
         return BankWriteSerializer
-
