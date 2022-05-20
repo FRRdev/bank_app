@@ -8,6 +8,9 @@ from src.profiles.serializers import GetUserBankSerializer
 
 
 class ReadUserSerializer(serializers.ModelSerializer):
+    """ Serializer for public user info
+    """
+
     class Meta:
         model = UserNet
         fields = ("id", "username", "first_name", "last_name")
@@ -15,12 +18,17 @@ class ReadUserSerializer(serializers.ModelSerializer):
 
 
 class CurrencySerializer(serializers.ModelSerializer):
+    """ Serializer for Currency
+    """
+
     class Meta:
         model = Currency
         fields = ("id", "code", "name", "bank")
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """ Serializer for Category
+    """
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -29,6 +37,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class WriteTransactionSerializer(serializers.ModelSerializer):
+    """ Serializer to write transaction
+    """
+
     # currency = serializers.SlugRelatedField(slug_field="code", queryset=Currency.objects.all())
 
     class Meta:
@@ -42,6 +53,8 @@ class WriteTransactionSerializer(serializers.ModelSerializer):
 
 
 class ReadTransactionSerializer(serializers.ModelSerializer):
+    """ Serializer to read transaction
+    """
     user = ReadUserSerializer()
     currency = CurrencySerializer()
     category = CategorySerializer()
@@ -53,6 +66,8 @@ class ReadTransactionSerializer(serializers.ModelSerializer):
 
 
 class ReportEntrySerializer(serializers.Serializer):
+    """ Serializer for report about transaction
+    """
     category = CategorySerializer()
     total = serializers.DecimalField(max_digits=15, decimal_places=2)
     count = serializers.IntegerField()
@@ -60,6 +75,8 @@ class ReportEntrySerializer(serializers.Serializer):
 
 
 class ReportParamsSerializer(serializers.Serializer):
+    """ Serializer for parameters for report
+    """
     start_date = serializers.DateTimeField()
     end_date = serializers.DateTimeField()
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -69,7 +86,7 @@ class ReportParamsSerializer(serializers.Serializer):
 
 
 class BankWriteSerializer(serializers.ModelSerializer):
-    """ Класс сериализации для Банка
+    """ Serializer to write bank
     """
     bank_users = GetUserBankSerializer(many=True, read_only=True)
     currencies = CurrencySerializer(many=True, read_only=True)
@@ -80,7 +97,7 @@ class BankWriteSerializer(serializers.ModelSerializer):
 
 
 class BankReadSerializer(serializers.ModelSerializer):
-    """ Класс сериализации для Банка
+    """ Serializer to read bank
     """
     total_sum_of_transaction = serializers.SerializerMethodField('get_total_sum_of_transaction')
     bank_users = GetUserBankSerializer(many=True, read_only=True)

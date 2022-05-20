@@ -24,6 +24,8 @@ class ReportParams:
 
 
 def transaction_report(params: ReportParams):
+    """ Report on transactions of a certain user
+    """
     data = []
     queryset = Transaction.objects.filter(
         user=params.user,

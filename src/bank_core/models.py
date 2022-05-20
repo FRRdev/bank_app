@@ -3,6 +3,8 @@ from django.conf import settings
 
 
 class Bank(models.Model):
+    """ Model of Bank
+    """
     name = models.CharField(max_length=120, unique=True)
     address = models.CharField(max_length=120, unique=True)
     year_of_foundation = models.PositiveIntegerField()
@@ -13,7 +15,9 @@ class Bank(models.Model):
 
 
 class Currency(models.Model):
-    bank = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='currencies',null=True,blank=True)
+    """ Model of Currency for transactions
+    """
+    bank = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='currencies', null=True, blank=True)
     code = models.CharField(max_length=3)
     name = models.CharField(max_length=32, blank=True)
 
@@ -22,6 +26,8 @@ class Currency(models.Model):
 
 
 class Category(models.Model):
+    """ Model of Category for transactions
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="categories")
     name = models.CharField(max_length=32, blank=True)
 
@@ -30,6 +36,8 @@ class Category(models.Model):
 
 
 class Transaction(models.Model):
+    """ Model of Transaction
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="transactions")
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     currency = models.ForeignKey(Currency, on_delete=models.PROTECT, related_name="transactions")
@@ -43,6 +51,8 @@ class Transaction(models.Model):
 
 
 class AllowList(models.Model):
+    """ Model of ip addresses allow list
+    """
     ip_address = models.GenericIPAddressField()
 
     def __str__(self):
